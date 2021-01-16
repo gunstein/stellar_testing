@@ -9,23 +9,24 @@ import (
 
 // GET /art
 type FindArtOutput struct {
-	ArtId        uint   `json:"artid" binding:"required"`
-	Name         string `json:"name" binding:"required"`
-	Description  string `json:"description" binding:"required"`
-	SmallFileUrl string `json:"small_file_url" binding:"required"`
+	ArtId        uint    `json:"artid" binding:"required"`
+	Title        string  `json:"title" binding:"required"`
+	Description  string  `json:"description" binding:"required"`
+	Artist       string  `json:"artist" binding:"required"`
+	Price        float32 `json:"price" binding:"required"`
+	SmallFileUrl string  `json:"small_file_url" binding:"required"`
 }
 
 // Find all art
 func FindArt(c *gin.Context) {
 	var art []models.Art
 
-	//Think its better to do above.
-	models.DB.Select("ID", "Name", "Description", "SmallFileName").Find(&art)
+	models.DB.Select("ID", "Title", "Description", "Artist", "Price", "SmallFileUrl").Find(&art)
 
 	//Convert from Artarray to outputarray
 	var output []FindArtOutput
 	for _, b := range art {
-		element := FindArtOutput{ArtId: b.ID, Name: b.Name, Description: b.Description, SmallFileUrl: b.SmallFileName}
+		element := FindArtOutput{ArtId: b.ID, Title: b.Title, Description: b.Description, Artist: b.Artist, Price: b.Price, SmallFileUrl: b.SmallFileUrl}
 		output = append(output, element)
 	}
 
