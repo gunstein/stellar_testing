@@ -1,2 +1,2 @@
-# stellar_testing
-Testing Stellar cryptocurrency.
+# Testing the Stellar cryptocurrency
+Under construction
