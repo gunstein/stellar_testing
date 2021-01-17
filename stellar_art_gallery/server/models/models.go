@@ -46,3 +46,13 @@ func ConnectDatabase() {
 	db.Create(&art4)
 	DB = db
 }
+
+func GetOrderForId(OrderId uint) (order Order, err error) {
+	err = DB.First(&order, OrderId).Error
+	return order, err
+}
+
+func GetArtForId(ArtId uint) (art Art, err error) {
+	err = DB.First(&art, ArtId).Error
+	return art, err
+}

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gunstein/stellar_testing/stellar_art_gallery/server/models"
@@ -38,19 +39,30 @@ type CreateOrderInput struct {
 	ArtId uint   `json:"artid" binding:"required"`
 }
 
+type CreateOrderOutput struct {
+	Account string `json:"account" binding:"required"`
+	Memo    string `json:"memo" binding:"required"`
+}
+
 // POST /orders
 // Create new order
-func CreateOrder(c *gin.Context) {
-	// Validate input
-	var input CreateOrderInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+//This is one way to get account into Handlerfunc as parameter
+//https://stackoverflow.com/questions/34046194/how-to-pass-arguments-to-router-handlers-in-golang-using-gin-web-framework
+func CreateOrderHandler(account string) gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+		// Validate input
+		var input CreateOrderInput
+		if err := c.ShouldBindJSON(&input); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Create order
+		order := models.Order{Email: input.Email, ArtId: input.ArtId}
+		models.DB.Create(&order)
+
+		var output = CreateOrderOutput{Account: account, Memo: strconv.FormatUint(uint64(order.ID), 10)}
+		c.JSON(http.StatusOK, gin.H{"data": output})
 	}
-
-	// Create order
-	order := models.Order{Email: input.Email, ArtId: input.ArtId}
-	models.DB.Create(&order)
-
-	c.JSON(http.StatusOK, gin.H{"data": order})
+	return gin.HandlerFunc(fn)
 }
