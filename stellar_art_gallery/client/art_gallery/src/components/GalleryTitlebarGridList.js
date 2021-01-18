@@ -32,7 +32,8 @@ export default function GalleryTitlebarGridList({ handleOrder }) {
     let mounted = true;
     getArt().then((items) => {
       if (mounted) {
-        setArt(items);
+        //console.log(items.data)
+        setArt(items.data);
       }
     });
     return () => (mounted = false);
@@ -49,8 +50,8 @@ export default function GalleryTitlebarGridList({ handleOrder }) {
           <ListSubheader component="div">Gallery</ListSubheader>
         </GridListTile>
         {art.map((tile) => (
-          <GridListTile key={tile.img}>
-            <img src={tile.img} alt={tile.title} />
+          <GridListTile key={tile.small_file_url}>
+            <img src={tile.small_file_url} alt={tile.title} />
             <GridListTileBar
               title={tile.title}
               subtitle={<span>by: {tile.artist}</span>}

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 	"github.com/gunstein/stellar_testing/stellar_art_gallery/server/controllers"
 	"github.com/gunstein/stellar_testing/stellar_art_gallery/server/models"
 
@@ -96,15 +97,20 @@ func main() {
 
 		SendEmailSMTP(order.Email, *emailFrom, *emailHost, *emailPassword, *emailPort, art.BigFileUrl)
 	}
+	fmt.Println("Before streaming.")
 	err := client.StreamPayments(ctx, opRequest, paymentHandler)
 	if err != nil {
 		fmt.Println(err)
 	}
-
+	fmt.Println("After streaming.")
 	r := gin.Default()
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{"*"}
+	r.Use(cors.New(corsConfig))
+	
 	// Routes
 	r.GET("/art", controllers.FindArt)
-	r.POST("/orders", controllers.CreateOrderHandler(*account_publickey))
+	r.POST("/order", controllers.CreateOrderHandler(*account_publickey))
 
 	// Run the server
 	r.Run()

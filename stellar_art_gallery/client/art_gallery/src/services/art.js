@@ -1,5 +1,5 @@
 export function getArt() {
-    return fetch("https://0v3jk.sse.codesandbox.io/art").then((data) =>
+    return fetch(process.env.REACT_APP_API_URL + "/art").then((data) =>
       data.json()
     );
   }

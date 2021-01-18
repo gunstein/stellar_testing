@@ -28,7 +28,7 @@ type Order struct {
 var DB *gorm.DB
 
 func ConnectDatabase() {
-	os.Remove("test.db")
+	os.Remove("stellar_art_gallery.db")
 	db, err := gorm.Open(sqlite.Open("stellar_art_gallery.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
