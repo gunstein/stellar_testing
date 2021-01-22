@@ -17,8 +17,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper
   },
   gridList: {
-    width: 500,
-    height: 450
+    width: 700,
+    height: 800
   },
   icon: {
     color: "rgba(255, 255, 255, 0.54)"
@@ -45,9 +45,9 @@ export default function GalleryTitlebarGridList({ handleOrder }) {
 
   return (
     <div className={classes.root}>
-      <GridList cellHeight={180} className={classes.gridList}>
+      <GridList cellHeight={350} className={classes.gridList}>
         <GridListTile key="Subheader" cols={2} style={{ height: "auto" }}>
-          <ListSubheader component="div">Gallery</ListSubheader>
+          <ListSubheader component="div" style={{ fontSize: '50px' }} >StellarGallery</ListSubheader>
         </GridListTile>
         {art.map((tile) => (
           <GridListTile key={tile.small_file_url}>
