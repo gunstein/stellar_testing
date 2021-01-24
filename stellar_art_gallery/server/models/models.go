@@ -20,9 +20,8 @@ type Art struct {
 
 type Order struct {
 	gorm.Model
-	Email string `gorm:"not null"`
 	Paid  bool `gorm:"default:false"`
-	EmailSent bool `gorm:"default:false"`
+	SseSent bool `gorm:"default:false"`
 	ArtId uint `gorm:"not null"`
 }
 
@@ -67,11 +66,11 @@ func UpdateOrderToPaid(OrderId uint) (order Order, err error) {
 	return order, err
 }
 
-func UpdateOrderToEmailSent(OrderId uint) (order Order, err error) {
+func UpdateOrderToSSESent(OrderId uint) (order Order, err error) {
 	err = DB.First(&order, OrderId).Error
 	if err != nil {
 		return order, err
 	}
-	DB.Model(&order).Update("email_sent", true)	
+	DB.Model(&order).Update("sse_sent", true)	
 	return order, err
 }

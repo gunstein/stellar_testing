@@ -35,7 +35,6 @@ func FindArt(c *gin.Context) {
 }
 
 type CreateOrderInput struct {
-	Email string `json:"email" binding:"required"`
 	ArtId uint   `json:"artid" binding:"required"`
 }
 
@@ -58,7 +57,7 @@ func CreateOrderHandler(account string) gin.HandlerFunc {
 		}
 
 		// Create order
-		order := models.Order{Email: input.Email, ArtId: input.ArtId}
+		order := models.Order{ArtId: input.ArtId}
 		models.DB.Create(&order)
 
 		var output = CreateOrderOutput{Account: account, Memo: strconv.FormatUint(uint64(order.ID), 10)}
