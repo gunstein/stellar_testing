@@ -10,14 +10,12 @@ import (
 
 	"github.com/stellar/go/clients/horizonclient"
 	"github.com/stellar/go/protocols/horizon/operations"
+	"github.com/gin-gonic/gin"
 )
 
 
-//Producer
-func CreatePaymentHandler(payments chan<- string, account string, client *horizonclient.Client ) func(operations.Operation){
+func CreatePaymentHandler(c * gin.Context, account string, client *horizonclient.Client ) func(operations.Operation){
 	paymentHandler := func(op operations.Operation) {
-		fmt.Println("Payment received.")
-
 		transaction, err := client.TransactionDetail(op.GetTransactionHash())
 		if err != nil {
 			fmt.Println(err)
@@ -72,9 +70,12 @@ func CreatePaymentHandler(payments chan<- string, account string, client *horizo
 			fmt.Println("UpdateOrderToPaid failed.")
 			return
 		}
-		//Inform consumers
-		fmt.Println("Payment received. send message to consumers. ")
-		payments <- memo
+
+		//payments <- memo
+		c.Writer.Write([]byte("event: message\n"))
+		c.Writer.Write([]byte("data: " + memo + "\n"))
+		c.Writer.Write([]byte("\n"))
+		c.Writer.Flush()
 	}
 
 	return paymentHandler

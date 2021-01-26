@@ -51,8 +51,8 @@ export default function ImageDialog({ handleCloseToParent, bigImageUrl }) {
       onClose={handleClose}
       TransitionComponent={Transition}
     >
-      <GalleryAppBar></GalleryAppBar>
       <main className={classes.layout}>
+        <GalleryAppBar></GalleryAppBar>
         <Paper className={classes.paper}>
           <Fab color="primary" aria-label="Close" onClick={() => handleClose()}>
             <CloseIcon />

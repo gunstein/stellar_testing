@@ -70,9 +70,10 @@ const Buy = () => {
   const [createAccountMode, setCreateAccountMode] = useState(false);
   const [payMode, setPayMode] = useState(false);
   const [spinnerCreateAccount, setSpinnerCreateAccount] = useState(false);
+  const [spinnerPay, setSpinnerPay] = useState(false);
   const [sourceKeyPair, setSourceKeyPair] = useState(null);
   const [bigImageUrl, setBigImageUrl] = useState("");
-  const [receiveBigImageMode, setReceiveBigImageMode] = useState(false);
+  //const [receiveBigImageMode, setReceiveBigImageMode] = useState(false);
 
   const classes = useStyles();
 
@@ -127,6 +128,8 @@ const Buy = () => {
           evSource.removeEventListener("message", handleReceiveSSEMessage);
           evSource.close();
           handleGetAccountBalance(sourceAccountPublicKey);
+          setPayMode(false);
+          setSpinnerPay(false);
         }
       );
     }
@@ -137,8 +140,8 @@ const Buy = () => {
   };
 
   const handlePay = () => {
-    setReceiveBigImageMode(true);
-    setPayMode(false);
+    setSpinnerPay(true);
+
     evSource = getEventSourceSSEReceiveBigImageUrl();
     evSource.onerror = handleSSEError;
     evSource.addEventListener("message", handleReceiveSSEMessage);
@@ -156,161 +159,163 @@ const Buy = () => {
   };
 
   const handleCloseImageDialog = () => {
-    setReceiveBigImageMode(false);
+    setBigImageUrl("");
   };
 
   return (
     <React.Fragment>
-      <GalleryAppBar></GalleryAppBar>
-      <main className={classes.layout}>
-        <Paper className={classes.paper}>
-          <Typography variant="h6" gutterBottom>
-            Buy {selectedTile.title} by {selectedTile.artist}
-          </Typography>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <TextField
-                id="target_account"
-                name="targetAccount"
-                label="Target Account"
-                fullWidth
-                InputProps={{
-                  readOnly: true,
-                }}
-                value={targetAccount}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                id="target_memo"
-                name="targetMemo"
-                label="Target Memo"
-                fullWidth
-                value={targetMemo}
-                InputProps={{
-                  readOnly: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                id="target_amount"
-                name="targetAmount"
-                label="Target Amount"
-                fullWidth
-                value={selectedTile.price}
-                InputProps={{
-                  readOnly: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                id="target_downloadkey"
-                name="targetDownloadKey"
-                label="Target DownloadKey"
-                fullWidth
-                value={targetDownloadKey}
-                InputProps={{
-                  readOnly: true,
-                }}
-              />
-            </Grid>
-            {orderMode ? (
+      {bigImageUrl === "" ? (
+        <main className={classes.layout}>
+          <GalleryAppBar></GalleryAppBar>
+          <Paper className={classes.paper}>
+            <Typography variant="h6" gutterBottom>
+              Buy {selectedTile.title} by {selectedTile.artist}
+            </Typography>
+            <Grid container spacing={3}>
               <Grid item xs={12}>
-                <div className={classes.buttons}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    onClick={handleOrder}
-                  >
-                    Order
-                  </Button>
-                </div>
+                <TextField
+                  id="target_account"
+                  name="targetAccount"
+                  label="Target Account"
+                  fullWidth
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  value={targetAccount}
+                />
               </Grid>
-            ) : null}
-            {!orderMode ? (
-              <React.Fragment>
-                <Grid item xs={12}>
-                  <TextField
-                    id="source_account_public_key"
-                    name="sourceAccountPublicKey"
-                    label="Source Account Public Key"
-                    fullWidth
-                    value={sourceAccountPublicKey}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    id="source_account_secret"
-                    name="sourceAccountSecret"
-                    label="Source Account Secret"
-                    fullWidth
-                    value={sourceAccountSecret}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    id="source_account_balance"
-                    name="sourceAccountBalance"
-                    label="Source Account Balance"
-                    fullWidth
-                    value={sourceAccountBalance}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
-              </React.Fragment>
-            ) : null}
-            {createAccountMode ? (
               <Grid item xs={12}>
-                <div className={classes.buttons}>
-                  {spinnerCreateAccount ? <CircularProgress /> : null}
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    onClick={handleCreateAccount}
-                  >
-                    Create and fund account
-                  </Button>
-                </div>
+                <TextField
+                  id="target_memo"
+                  name="targetMemo"
+                  label="Target Memo"
+                  fullWidth
+                  value={targetMemo}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
               </Grid>
-            ) : null}
-            {payMode ? (
               <Grid item xs={12}>
-                <div className={classes.buttons}>
-                  {/*spinnerCreateAccount ? <CircularProgress /> : null*/}
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    onClick={handlePay}
-                  >
-                    Pay
-                  </Button>
-                </div>
+                <TextField
+                  id="target_amount"
+                  name="targetAmount"
+                  label="Target Amount"
+                  fullWidth
+                  value={selectedTile.price}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
               </Grid>
-            ) : null}
-          </Grid>
-          <Fab
-            color="primary"
-            aria-label="Gallery"
-            onClick={() => handleGallery()}
-          >
-            <HomeIcon />
-          </Fab>
-        </Paper>
-      </main>
-      {receiveBigImageMode && bigImageUrl !== "" ? (
+              <Grid item xs={12}>
+                <TextField
+                  id="target_downloadkey"
+                  name="targetDownloadKey"
+                  label="Target DownloadKey"
+                  fullWidth
+                  value={targetDownloadKey}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              </Grid>
+              {orderMode ? (
+                <Grid item xs={12}>
+                  <div className={classes.buttons}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.button}
+                      onClick={handleOrder}
+                    >
+                      Order
+                    </Button>
+                  </div>
+                </Grid>
+              ) : null}
+              {!orderMode ? (
+                <React.Fragment>
+                  <Grid item xs={12}>
+                    <TextField
+                      id="source_account_public_key"
+                      name="sourceAccountPublicKey"
+                      label="Source Account Public Key"
+                      fullWidth
+                      value={sourceAccountPublicKey}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      id="source_account_secret"
+                      name="sourceAccountSecret"
+                      label="Source Account Secret"
+                      fullWidth
+                      value={sourceAccountSecret}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      id="source_account_balance"
+                      name="sourceAccountBalance"
+                      label="Source Account Balance"
+                      fullWidth
+                      value={sourceAccountBalance}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                    />
+                  </Grid>
+                </React.Fragment>
+              ) : null}
+              {createAccountMode ? (
+                <Grid item xs={12}>
+                  <div className={classes.buttons}>
+                    {spinnerCreateAccount ? <CircularProgress /> : null}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.button}
+                      onClick={handleCreateAccount}
+                    >
+                      Create and fund account
+                    </Button>
+                  </div>
+                </Grid>
+              ) : null}
+              {payMode ? (
+                <Grid item xs={12}>
+                  <div className={classes.buttons}>
+                    {spinnerPay ? <CircularProgress /> : null}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.button}
+                      onClick={handlePay}
+                    >
+                      Pay
+                    </Button>
+                  </div>
+                </Grid>
+              ) : null}
+            </Grid>
+            <Fab
+              color="primary"
+              aria-label="Gallery"
+              onClick={() => handleGallery()}
+            >
+              <HomeIcon />
+            </Fab>
+          </Paper>
+        </main>
+      ) : null}
+      {bigImageUrl !== "" ? (
         <ImageDialog
           handleCloseToParent={handleCloseImageDialog}
           bigImageUrl={bigImageUrl}

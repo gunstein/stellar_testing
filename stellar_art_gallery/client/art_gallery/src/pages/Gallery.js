@@ -77,8 +77,8 @@ const Gallery = () => {
 
   return (
     <React.Fragment>
-      <GalleryAppBar></GalleryAppBar>
       <main className={classes.layout}>
+        <GalleryAppBar></GalleryAppBar>
         <Paper className={classes.paper}>
           <GridList /*cellHeight={350} */ className={classes.gridList}>
             {art.map((tile) => (
