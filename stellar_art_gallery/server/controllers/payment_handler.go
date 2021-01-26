@@ -12,13 +12,9 @@ import (
 	"github.com/stellar/go/protocols/horizon/operations"
 )
 
-type Message struct {
-    Memo string
-    Url  string
-}
 
 //Producer
-func CreatePaymentHandler(payments chan<- Message, account string, client *horizonclient.Client ) func(operations.Operation){
+func CreatePaymentHandler(payments chan<- string, account string, client *horizonclient.Client ) func(operations.Operation){
 	paymentHandler := func(op operations.Operation) {
 		fmt.Println("Payment received.")
 
@@ -39,6 +35,8 @@ func CreatePaymentHandler(payments chan<- Message, account string, client *horiz
 		}
 		//Get orderid from memo		
 		memo := transaction.Memo
+		fmt.Println("Payment received. memo: ", memo)
+
 		u64, err := strconv.ParseUint(memo, 10, 32)
 		if err != nil {
 			fmt.Println(err)
@@ -55,7 +53,6 @@ func CreatePaymentHandler(payments chan<- Message, account string, client *horiz
 			fmt.Println(err)
 			return
 		}
-
 
 		//Check payment amount
 		value, err := strconv.ParseFloat(payment.Amount, 32)
@@ -76,21 +73,8 @@ func CreatePaymentHandler(payments chan<- Message, account string, client *horiz
 			return
 		}
 		//Inform consumers
-		payments <- Message{Memo: memo, Url: art.BigFileUrl}
-		/*
-		sent, err := SendEmailSMTP(order.Email, *emailFrom, *emailHost, *emailPassword, *emailPort, art.BigFileUrl)
-		if !sent || err != nil {
-			fmt.Println("SendEmailSMTP failed.")
-			return
-		}
-		*/
-		/*
-		//update order to emailsent
-		order, err = models.UpdateOrderToEmailSent(order.ID)
-		if err != nil {
-			fmt.Println("UpdateOrderToEmailSent failed.")
-			return
-		}	*/	
+		fmt.Println("Payment received. send message to consumers. ")
+		payments <- memo
 	}
 
 	return paymentHandler

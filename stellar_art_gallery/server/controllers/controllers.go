@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gunstein/stellar_testing/stellar_art_gallery/server/models"
+	"github.com/google/uuid"
 )
 
 // GET /art
@@ -34,6 +35,59 @@ func FindArt(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": output})
 }
 
+
+type FindBigFileUrlOutput struct {
+	BigFileUrl string `json:"big_file_url" binding:"required"`
+	Comment    string `json:"comment"`
+}
+
+//  /order/:memo/big_file_url/:key
+func FindBigFileUrl(c *gin.Context) {
+
+	memo_param := c.Param("memo")
+	key_param := c.Param("key")
+
+	var output FindBigFileUrlOutput
+
+	orderid, err := strconv.ParseUint(memo_param, 10, 32)
+	if err != nil {
+		output.Comment = "memo is not a number."
+		c.JSON(http.StatusNotAcceptable, gin.H{"data": output})
+		return
+	}
+
+	order, err := models.GetOrderForId(uint(orderid))
+	if err != nil {
+		output.Comment = "order not found."
+		c.JSON(http.StatusNotFound, gin.H{"data": output})
+		return
+	}
+
+	//Check order is paid and key is correct
+	if order.Paid == false {
+		output.Comment = "Not paid."
+		c.JSON(http.StatusNotAcceptable, gin.H{"data": output})
+		return
+	}
+	
+	if order.DownloadKey != key_param{
+		output.Comment = "Wrong downloadkey."
+		c.JSON(http.StatusUnauthorized, gin.H{"data": output})
+		return
+	}
+
+	//get art from orderid
+	art, err := models.GetArtForId(order.ArtId)
+	if err != nil {
+		output.Comment = "Artid not found."
+		c.JSON(http.StatusNotFound, gin.H{"data": output})
+		return
+	}
+
+	output.BigFileUrl = art.BigFileUrl
+	c.JSON(http.StatusOK, gin.H{"data": output})
+}
+
 type CreateOrderInput struct {
 	ArtId uint   `json:"artid" binding:"required"`
 }
@@ -41,6 +95,7 @@ type CreateOrderInput struct {
 type CreateOrderOutput struct {
 	Account string `json:"account" binding:"required"`
 	Memo    string `json:"memo" binding:"required"`
+	DownloadKey string `json:"download_key" binding:"required"`
 }
 
 // POST /orders
@@ -56,11 +111,14 @@ func CreateOrderHandler(account string) gin.HandlerFunc {
 			return
 		}
 
+		//Generate downloadKey
+		downloadKey := uuid.New().String()
+
 		// Create order
-		order := models.Order{ArtId: input.ArtId}
+		order := models.Order{ArtId: input.ArtId, DownloadKey: downloadKey}
 		models.DB.Create(&order)
 
-		var output = CreateOrderOutput{Account: account, Memo: strconv.FormatUint(uint64(order.ID), 10)}
+		var output = CreateOrderOutput{Account: account, Memo: strconv.FormatUint(uint64(order.ID), 10), DownloadKey: downloadKey}
 		c.JSON(http.StatusOK, gin.H{"data": output})
 	}
 	return gin.HandlerFunc(fn)

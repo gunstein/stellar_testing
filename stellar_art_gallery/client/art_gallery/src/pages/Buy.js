@@ -8,7 +8,11 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import GalleryAppBar from "../components/GalleryAppBar";
 import Button from "@material-ui/core/Button";
-import { createOrder } from "../services/order";
+import {
+  createOrder,
+  getEventSourceSSEReceiveBigImageUrl,
+  getBigFileUrlFromMemoAndDownloadKey,
+} from "../services/order";
 import {
   createAccount,
   getAccountBalance,
@@ -17,6 +21,7 @@ import {
 import CircularProgress from "@material-ui/core/CircularProgress";
 import HomeIcon from "@material-ui/icons/Home";
 import Fab from "@material-ui/core/Fab";
+import ImageDialog from "../components/ImageDialog";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -57,7 +62,7 @@ const Buy = () => {
   const { selectedTile } = useContext(selectedTileContext);
   const [targetAccount, setTargetAccount] = useState("");
   const [targetMemo, setTargetMemo] = useState("");
-  //const [targetAmount, setTargetAmount] = useState("");
+  const [targetDownloadKey, setTargetDownloadKey] = useState("");
   const [sourceAccountPublicKey, setSourceAccountPublicKey] = useState("");
   const [sourceAccountSecret, setSourceAccountSecret] = useState("");
   const [sourceAccountBalance, setSourceAccountBalance] = useState(0);
@@ -66,8 +71,12 @@ const Buy = () => {
   const [payMode, setPayMode] = useState(false);
   const [spinnerCreateAccount, setSpinnerCreateAccount] = useState(false);
   const [sourceKeyPair, setSourceKeyPair] = useState(null);
+  const [bigImageUrl, setBigImageUrl] = useState("");
+  const [receiveBigImageMode, setReceiveBigImageMode] = useState(false);
 
   const classes = useStyles();
+
+  var evSource = null;
 
   const handleOrder = () => {
     createOrder({ artid: selectedTile.artid }).then((order_response) => {
@@ -79,6 +88,7 @@ const Buy = () => {
       ) {
         setTargetAccount(order_response.data.account);
         setTargetMemo(order_response.data.memo);
+        setTargetDownloadKey(order_response.data.download_key);
         setOrderMode(false);
         setCreateAccountMode(true);
       }
@@ -106,7 +116,33 @@ const Buy = () => {
     );
   };
 
+  const handleReceiveSSEMessage = (event) => {
+    console.log("handleReceiveSSEMessage: ", event);
+    if (event.data === targetMemo) {
+      console.log("before getBigFileUrlFromMemoAndDownloadKey");
+      getBigFileUrlFromMemoAndDownloadKey(targetMemo, targetDownloadKey).then(
+        (data) => {
+          console.log("data: ", data);
+          setBigImageUrl(data.data.big_file_url);
+          evSource.removeEventListener("message", handleReceiveSSEMessage);
+          evSource.close();
+          handleGetAccountBalance(sourceAccountPublicKey);
+        }
+      );
+    }
+  };
+
+  const handleSSEError = (error) => {
+    console.error("EventSource failed:", error);
+  };
+
   const handlePay = () => {
+    setReceiveBigImageMode(true);
+    setPayMode(false);
+    evSource = getEventSourceSSEReceiveBigImageUrl();
+    evSource.onerror = handleSSEError;
+    evSource.addEventListener("message", handleReceiveSSEMessage);
+
     sendPayment(
       sourceKeyPair,
       targetAccount,
@@ -117,6 +153,10 @@ const Buy = () => {
 
   const handleGallery = () => {
     setPage(pagesMapping.gallery);
+  };
+
+  const handleCloseImageDialog = () => {
+    setReceiveBigImageMode(false);
   };
 
   return (
@@ -159,6 +199,18 @@ const Buy = () => {
                 label="Target Amount"
                 fullWidth
                 value={selectedTile.price}
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="target_downloadkey"
+                name="targetDownloadKey"
+                label="Target DownloadKey"
+                fullWidth
+                value={targetDownloadKey}
                 InputProps={{
                   readOnly: true,
                 }}
@@ -258,6 +310,12 @@ const Buy = () => {
           </Fab>
         </Paper>
       </main>
+      {receiveBigImageMode && bigImageUrl !== "" ? (
+        <ImageDialog
+          handleCloseToParent={handleCloseImageDialog}
+          bigImageUrl={bigImageUrl}
+        ></ImageDialog>
+      ) : null}
     </React.Fragment>
   );
 };

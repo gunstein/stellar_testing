@@ -23,6 +23,9 @@ export async function getAccountBalance(account) {
 }
 
 export async function sendPayment(sourceKeyPair, targetAccount, memo, amount) {
+  console.log("sendPayment: targetAccount : ", targetAccount);
+  console.log("sendPayment: memo : ", memo);
+  console.log("sendPayment: amount : ", amount);
   //Mostly copied from here https://developers.stellar.org/docs/tutorials/send-and-receive-payments/
   var StellarSdk = require("stellar-sdk");
   var server = new StellarSdk.Server("https://horizon-testnet.stellar.org");
@@ -58,7 +61,8 @@ export async function sendPayment(sourceKeyPair, targetAccount, memo, amount) {
             // Because Stellar allows transaction in many currencies, you must
             // specify the asset type. The special "native" asset represents Lumens.
             asset: StellarSdk.Asset.native(),
-            amount: amount,
+            amount: amount.toString(10),
+            //amount: "1",
           })
         )
         // A memo allows you to add your own metadata to a transaction. It's

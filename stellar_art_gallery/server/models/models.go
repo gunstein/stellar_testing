@@ -21,8 +21,8 @@ type Art struct {
 type Order struct {
 	gorm.Model
 	Paid  bool `gorm:"default:false"`
-	SseSent bool `gorm:"default:false"`
 	ArtId uint `gorm:"not null"`
+	DownloadKey string
 }
 
 var DB *gorm.DB
