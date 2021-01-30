@@ -33,6 +33,7 @@ func main() {
 	r.GET("/stream", func(c *gin.Context) {
 		c.Writer.Header().Set("Content-Type", "text/event-stream")
 		c.Writer.Header().Set("Cache-Control", "no-cache")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 	
 		client := horizonclient.DefaultTestNetClient //DefaultPublicNetClient
 		opRequest := horizonclient.OperationRequest{ForAccount: *account_publickey}
@@ -49,5 +50,5 @@ func main() {
 	})	
 
 	// Run the server
-	r.Run(":8080")
+	r.Run(":5000")
 }

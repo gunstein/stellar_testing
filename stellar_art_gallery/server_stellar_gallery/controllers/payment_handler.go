@@ -71,7 +71,6 @@ func CreatePaymentHandler(c * gin.Context, account string, client *horizonclient
 			return
 		}
 
-		//payments <- memo
 		c.Writer.Write([]byte("event: message\n"))
 		c.Writer.Write([]byte("data: " + memo + "\n"))
 		c.Writer.Write([]byte("\n"))
