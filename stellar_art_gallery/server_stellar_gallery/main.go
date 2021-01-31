@@ -2,13 +2,15 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"crypto/tls"
 	"flag"
-		
-	"github.com/gin-gonic/gin"
+	"fmt"
+	"net/http"
+
 	"github.com/gin-contrib/cors"
-	"github.com/gunstein/stellar_testing/stellar_art_gallery/server/controllers"
-	"github.com/gunstein/stellar_testing/stellar_art_gallery/server/models"
+	"github.com/gin-gonic/gin"
+	"github.com/gunstein/stellar_testing/stellar_art_gallery/server_stellar_gallery/controllers"
+	"github.com/gunstein/stellar_testing/stellar_art_gallery/server_stellar_gallery/models"
 
 	"github.com/stellar/go/clients/horizonclient"
 )
@@ -16,6 +18,8 @@ import (
 func main() {
 	account_publickey := flag.String("account", "not_set_account", "account public key")
 	flag.Parse()
+
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	// Build and connect to database
 	models.ConnectDatabase()
@@ -36,6 +40,8 @@ func main() {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 	
 		client := horizonclient.DefaultTestNetClient //DefaultPublicNetClient
+		client.HorizonURL = "https://34.231.194.216/"
+		
 		opRequest := horizonclient.OperationRequest{ForAccount: *account_publickey}
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
@@ -47,6 +53,7 @@ func main() {
 		c.Writer.Flush()
 		<-c.Writer.CloseNotify()
 		// do something after client is gone
+		fmt.Println("Client gone")
 	})	
 
 	// Run the server

@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gunstein/stellar_testing/stellar_art_gallery/server/models"
 	"github.com/google/uuid"
+	"github.com/gunstein/stellar_testing/stellar_art_gallery/server_stellar_gallery/models"
 )
 
 // GET /art

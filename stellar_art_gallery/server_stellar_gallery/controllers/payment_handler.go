@@ -2,15 +2,15 @@ package controllers
 
 import (
 	"fmt"
-		
+
 	"strconv"
 	"strings"
 
-	"github.com/gunstein/stellar_testing/stellar_art_gallery/server/models"
+	"github.com/gunstein/stellar_testing/stellar_art_gallery/server_stellar_gallery/models"
 
+	"github.com/gin-gonic/gin"
 	"github.com/stellar/go/clients/horizonclient"
 	"github.com/stellar/go/protocols/horizon/operations"
-	"github.com/gin-gonic/gin"
 )
 
 

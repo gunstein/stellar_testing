@@ -14,15 +14,15 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
     justifyContent: "space-around",
     overflow: "hidden",
-    backgroundColor: theme.palette.background.paper
+    backgroundColor: theme.palette.background.paper,
   },
   gridList: {
     width: 700,
-    height: 800
+    height: 800,
   },
   icon: {
-    color: "rgba(255, 255, 255, 0.54)"
-  }
+    color: "rgba(255, 255, 255, 0.54)",
+  },
 }));
 
 export default function GalleryTitlebarGridList({ handleOrder }) {
@@ -47,11 +47,16 @@ export default function GalleryTitlebarGridList({ handleOrder }) {
     <div className={classes.root}>
       <GridList cellHeight={350} className={classes.gridList}>
         <GridListTile key="Subheader" cols={2} style={{ height: "auto" }}>
-          <ListSubheader component="div" style={{ fontSize: '50px' }} >StellarGallery</ListSubheader>
+          <ListSubheader component="div" style={{ fontSize: "50px" }}>
+            StellarGallery
+          </ListSubheader>
         </GridListTile>
         {art.map((tile) => (
           <GridListTile key={tile.small_file_url}>
-            <img src={tile.small_file_url} alt={tile.title} />
+            <img
+              src={`${process.env.PUBLIC_URL} + {tile.small_file_url}`}
+              alt={tile.title}
+            />
             <GridListTileBar
               title={tile.title}
               subtitle={<span>by: {tile.artist}</span>}

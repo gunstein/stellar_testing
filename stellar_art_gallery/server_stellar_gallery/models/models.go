@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"os"
 
 	"gorm.io/driver/sqlite"
@@ -28,6 +29,7 @@ type Order struct {
 var DB *gorm.DB
 
 func ConnectDatabase() {
+	fmt.Println("Testing1")
 	os.Remove("stellar_art_gallery.db")
 	db, err := gorm.Open(sqlite.Open("stellar_art_gallery.db"), &gorm.Config{})
 	if err != nil {
@@ -36,13 +38,13 @@ func ConnectDatabase() {
 
 	db.AutoMigrate(&Art{}, &Order{})
 
-	art1 := Art{Title: "Sushi", Description: "Made in 2020 during the Lockdown.", Artist: "Anneli", Price: 1, SmallFileUrl: "https://drive.google.com/uc?export=view&id=1eU1DLGWLha8KfJct5DWS2WadJz0RcifC", BigFileUrl: "https://drive.google.com/uc?export=view&id=1kZFnq6rwmKjJ0P8B9ClEWXcdOlkBz98s"}
+	art1 := Art{Title: "Sushi", Description: "Made in 2020 during the Lockdown.", Artist: "Anneli", Price: 1, SmallFileUrl: "/assets/images/sushi_small.jpg", BigFileUrl: "https://storageforgv.blob.core.windows.net/stellargallery/sushi_big.jpg"}
 	db.Create(&art1)
-	art2 := Art{Title: "ScoobyDoo", Description: "Made in 2020 during the Lockdown.", Artist: "Anneli", Price: 1, SmallFileUrl: "https://drive.google.com/uc?export=view&id=1TciUqcac_FN1P-c-h1gnhYlnT2cnK1qa", BigFileUrl: "https://drive.google.com/uc?export=view&id=1hKwCJ-x3UKwJEfS-HRRPL9OkgMPv5YSn"}
+	art2 := Art{Title: "ScoobyDoo", Description: "Made in 2020 during the Lockdown.", Artist: "Anneli", Price: 1, SmallFileUrl: "/assets/images/scoobydoo_small.jpg", BigFileUrl: "https://storageforgv.blob.core.windows.net/stellargallery/scoobydoo_big.jpg"}
 	db.Create(&art2)
-	art3 := Art{Title: "Paperbag", Description: "Made in 2020 during the Lockdown.", Artist: "Anneli", Price: 1, SmallFileUrl: "https://drive.google.com/uc?export=view&id=1IxDAhNTq5V7TTRE3s0xfwvvb0GaLk3Fh", BigFileUrl: "https://drive.google.com/uc?export=view&id=1a4U3D_znz-_vRccPCB_yRw5XGRSWEoQH"}
+	art3 := Art{Title: "Paperbag", Description: "Made in 2020 during the Lockdown.", Artist: "Anneli", Price: 1, SmallFileUrl: "/assets/images/paperbag_small.jpg", BigFileUrl: "https://storageforgv.blob.core.windows.net/stellargallery/paperbag_big.jpg"}
 	db.Create(&art3)
-	art4 := Art{Title: "LionKing", Description: "Made in 2020 during the Lockdown.", Artist: "Anneli", Price: 1, SmallFileUrl: "https://drive.google.com/uc?export=view&id=1VgD7J5lYPoDLtJ6d9-sJH4b9u6eCyGXD", BigFileUrl: "https://drive.google.com/uc?export=view&id=1ys0KJ200qUiralOGfHWYL6dRIaXGPLf3"}
+	art4 := Art{Title: "LionKing", Description: "Made in 2020 during the Lockdown.", Artist: "Anneli", Price: 1, SmallFileUrl: "/assets/images/lionking_small.jpg", BigFileUrl: "https://storageforgv.blob.core.windows.net/stellargallery/lionking_big.jpg"}
 	db.Create(&art4)
 	DB = db
 }

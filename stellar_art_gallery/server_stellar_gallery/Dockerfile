@@ -2,13 +2,10 @@ FROM golang:latest as builder
 
 WORKDIR /app
 COPY . .
-ENV GO111MODULE=on
 
 RUN go get -d -v ./...
 RUN go install -v ./...
 
-RUN go install github.com/stellar/go/tools/...
-RUN go install github.com/stellar/go/services/...
 RUN go build -a -ldflags "-linkmode external -extldflags '-static' -s -w" -o server_stellar_gallery main.go
 
 #FROM scratch
