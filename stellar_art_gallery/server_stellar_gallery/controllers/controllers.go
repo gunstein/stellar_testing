@@ -38,6 +38,7 @@ func FindArt(c *gin.Context) {
 
 type FindBigFileUrlOutput struct {
 	BigFileUrl string `json:"big_file_url" binding:"required"`
+	AlternativeBigFileUrl string `json:"alternative_big_file_url" binding:"required"`
 	Comment    string `json:"comment"`
 }
 
@@ -85,6 +86,7 @@ func FindBigFileUrl(c *gin.Context) {
 	}
 
 	output.BigFileUrl = art.BigFileUrl
+	output.AlternativeBigFileUrl = art.AlternativeBigFileUrl
 	c.JSON(http.StatusOK, gin.H{"data": output})
 }
 

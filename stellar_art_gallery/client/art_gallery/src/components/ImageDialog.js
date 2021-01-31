@@ -7,7 +7,11 @@ import Slide from "@material-ui/core/Slide";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 
-export default function ImageDialog({ handleCloseToParent, bigImageUrl }) {
+export default function ImageDialog({
+  handleCloseToParent,
+  bigImageUrl,
+  alternativeBigImageUrl,
+}) {
   const useStyles = makeStyles((theme) => ({
     appBar: {
       position: "relative",
@@ -40,6 +44,10 @@ export default function ImageDialog({ handleCloseToParent, bigImageUrl }) {
     handleCloseToParent();
   };
 
+  const addAlternativeImgSrc = (ev) => {
+    ev.target.src = alternativeBigImageUrl;
+  };
+
   const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
   });
@@ -57,7 +65,12 @@ export default function ImageDialog({ handleCloseToParent, bigImageUrl }) {
           <Fab color="primary" aria-label="Close" onClick={() => handleClose()}>
             <CloseIcon />
           </Fab>
-          <img src={bigImageUrl} alt={bigImageUrl} style={{ width: "100%" }} />
+          <img
+            onError={addAlternativeImgSrc}
+            src={bigImageUrl}
+            alt={bigImageUrl}
+            style={{ width: "100%" }}
+          />
         </Paper>
       </main>
     </Dialog>

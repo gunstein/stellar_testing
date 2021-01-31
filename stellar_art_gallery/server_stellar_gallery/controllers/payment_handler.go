@@ -8,13 +8,13 @@ import (
 
 	"github.com/gunstein/stellar_testing/stellar_art_gallery/server_stellar_gallery/models"
 
-	"github.com/gin-gonic/gin"
+	broadcast "github.com/dustin/go-broadcast"
 	"github.com/stellar/go/clients/horizonclient"
 	"github.com/stellar/go/protocols/horizon/operations"
 )
 
 
-func CreatePaymentHandler(c * gin.Context, account string, client *horizonclient.Client ) func(operations.Operation){
+func CreatePaymentHandler(broadcaster broadcast.Broadcaster, account string, client *horizonclient.Client ) func(operations.Operation){
 	paymentHandler := func(op operations.Operation) {
 		transaction, err := client.TransactionDetail(op.GetTransactionHash())
 		if err != nil {
@@ -71,10 +71,7 @@ func CreatePaymentHandler(c * gin.Context, account string, client *horizonclient
 			return
 		}
 
-		c.Writer.Write([]byte("event: message\n"))
-		c.Writer.Write([]byte("data: " + memo + "\n"))
-		c.Writer.Write([]byte("\n"))
-		c.Writer.Flush()
+		broadcaster.Submit(memo)
 	}
 
 	return paymentHandler

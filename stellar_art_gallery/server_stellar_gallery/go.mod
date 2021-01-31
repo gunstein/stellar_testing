@@ -3,6 +3,7 @@ module github.com/gunstein/stellar_testing/stellar_art_gallery/server_stellar_ga
 go 1.15
 
 require (
+	github.com/dustin/go-broadcast v0.0.0-20171205050544-f664265f5a66
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-chi/chi v4.1.2+incompatible // indirect
@@ -11,7 +12,6 @@ require (
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/schema v1.2.0 // indirect
-	github.com/gunstein/stellar_testing/stellar_art_gallery/server v0.0.0-20210126173914-8d5480187a01
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.9.0 // indirect

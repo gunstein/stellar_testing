@@ -73,6 +73,7 @@ const Buy = () => {
   const [spinnerPay, setSpinnerPay] = useState(false);
   const [sourceKeyPair, setSourceKeyPair] = useState(null);
   const [bigImageUrl, setBigImageUrl] = useState("");
+  const [alternativeBigImageUrl, setAlternativeBigImageUrl] = useState("");
   //const [receiveBigImageMode, setReceiveBigImageMode] = useState(false);
 
   const classes = useStyles();
@@ -125,6 +126,7 @@ const Buy = () => {
         (data) => {
           console.log("data: ", data);
           setBigImageUrl(data.data.big_file_url);
+          setAlternativeBigImageUrl(data.data.alternative_big_file_url);
           evSource.removeEventListener("message", handleReceiveSSEMessage);
           evSource.close();
           handleGetAccountBalance(sourceAccountPublicKey);
@@ -160,6 +162,7 @@ const Buy = () => {
 
   const handleCloseImageDialog = () => {
     setBigImageUrl("");
+    setAlternativeBigImageUrl("");
   };
 
   return (
@@ -319,6 +322,7 @@ const Buy = () => {
         <ImageDialog
           handleCloseToParent={handleCloseImageDialog}
           bigImageUrl={bigImageUrl}
+          alternativeBigImageUrl={alternativeBigImageUrl}
         ></ImageDialog>
       ) : null}
     </React.Fragment>

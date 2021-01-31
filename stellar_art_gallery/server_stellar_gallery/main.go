@@ -5,13 +5,14 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
+	"io"
 	"net/http"
 
+	broadcast "github.com/dustin/go-broadcast"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gunstein/stellar_testing/stellar_art_gallery/server_stellar_gallery/controllers"
 	"github.com/gunstein/stellar_testing/stellar_art_gallery/server_stellar_gallery/models"
-
 	"github.com/stellar/go/clients/horizonclient"
 )
 
@@ -29,31 +30,46 @@ func main() {
 	corsConfig.AllowOrigins = []string{"*"}
 	r.Use(cors.New(corsConfig))
 	
+	broadcaster := broadcast.NewBroadcaster(100)
+	defer broadcaster.Close()
+	//r.Use(stream.ServeHTTP())
+
+	go func(){
+		//Start listening for payments on the shops account
+		client := horizonclient.DefaultTestNetClient //DefaultPublicNetClient
+		//client.HorizonURL = "https://34.231.194.216/"
+		
+		opRequest := horizonclient.OperationRequest{ForAccount: *account_publickey}
+		err := client.StreamPayments(context.Background(), opRequest, controllers.CreatePaymentHandler(broadcaster, *account_publickey, client))
+		if err != nil {
+			fmt.Println(err)
+		}
+	}()
+
 	// Routes
 	r.GET("/art", controllers.FindArt)
 	r.POST("/order", controllers.CreateOrderHandler(*account_publickey))
 	r.GET("/order/:memo/big_file_url/:key", controllers.FindBigFileUrl)
 
 	r.GET("/stream", func(c *gin.Context) {
+		ch := make(chan interface{})
+		broadcaster.Register(ch)
+		defer broadcaster.Unregister(ch)
+
+		//c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Content-Type", "text/event-stream")
 		c.Writer.Header().Set("Cache-Control", "no-cache")
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Connection", "keep-alive")
+		c.Writer.Header().Set("Transfer-Encoding", "chunked")
 	
-		client := horizonclient.DefaultTestNetClient //DefaultPublicNetClient
-		client.HorizonURL = "https://34.231.194.216/"
-		
-		opRequest := horizonclient.OperationRequest{ForAccount: *account_publickey}
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-		err := client.StreamPayments(ctx, opRequest, controllers.CreatePaymentHandler(c, *account_publickey, client))
-		if err != nil {
-			fmt.Println(err)
-		}
-	
-		c.Writer.Flush()
-		<-c.Writer.CloseNotify()
-		// do something after client is gone
-		fmt.Println("Client gone")
+		c.Stream(func(w io.Writer) bool {
+			// Stream message to client from message channel
+			if msg, ok := <-ch; ok {
+				c.SSEvent("message", msg)
+				return true
+			}
+			return false
+		})
 	})	
 
 	// Run the server
