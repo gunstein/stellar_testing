@@ -56,12 +56,12 @@ func main() {
 		broadcaster.Register(ch)
 		defer broadcaster.Unregister(ch)
 
-		//c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Content-Type", "text/event-stream")
 		c.Writer.Header().Set("Cache-Control", "no-cache")
 		c.Writer.Header().Set("Connection", "keep-alive")
 		c.Writer.Header().Set("Transfer-Encoding", "chunked")
-	
+		c.Writer.Flush()
 		c.Stream(func(w io.Writer) bool {
 			// Stream message to client from message channel
 			if msg, ok := <-ch; ok {
