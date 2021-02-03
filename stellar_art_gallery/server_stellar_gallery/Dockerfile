@@ -6,7 +6,8 @@ COPY . .
 RUN go get -d -v ./...
 RUN go install -v ./...
 
-RUN go build -a -ldflags "-linkmode external -extldflags '-static' -s -w" -o server_stellar_gallery main.go
+#RUN go build -a -ldflags "-linkmode external -extldflags '-static' -s -w" -o server_stellar_gallery main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server_stellar_gallery .
 
 #FROM scratch
 FROM centos:latest

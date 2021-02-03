@@ -1,9 +1,7 @@
 package models
 
 import (
-	"os"
-
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -29,12 +27,14 @@ type Order struct {
 var DB *gorm.DB
 
 func ConnectDatabase() {
-	os.Remove("stellar_art_gallery.db")
-	db, err := gorm.Open(sqlite.Open("stellar_art_gallery.db"), &gorm.Config{})
+	dsn := "host=postgres user=postgres password=postgres dbname=postgres port=5432"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
 
+	db.Migrator().DropTable(&Art{})
+	db.Migrator().DropTable(&Order{})
 	db.AutoMigrate(&Art{}, &Order{})
 
 	art1 := Art{Title: "Sushi", Description: "Made in 2020 during the Lockdown.", Artist: "Anneli", Price: 1, SmallFileUrl: "/assets/images/sushi_small.jpg", BigFileUrl: "https://storageforgv.blob.core.windows.net/stellargallery/sushi_big.jpg", AlternativeBigFileUrl: "https://drive.google.com/uc?export=view&id=1kZFnq6rwmKjJ0P8B9ClEWXcdOlkBz98s"}

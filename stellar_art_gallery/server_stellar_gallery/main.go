@@ -25,7 +25,9 @@ func main() {
 	// Build and connect to database
 	models.ConnectDatabase()
 
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
+
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{"*"}
 	r.Use(cors.New(corsConfig))
@@ -35,14 +37,15 @@ func main() {
 	//r.Use(stream.ServeHTTP())
 
 	go func(){
-		//Start listening for payments on the shops account
-		client := horizonclient.DefaultTestNetClient //DefaultPublicNetClient
-		//client.HorizonURL = "https://34.231.194.216/"
-		
-		opRequest := horizonclient.OperationRequest{ForAccount: *account_publickey}
-		err := client.StreamPayments(context.Background(), opRequest, controllers.CreatePaymentHandler(broadcaster, *account_publickey, client))
-		if err != nil {
-			fmt.Println(err)
+
+		for{
+			//Start listening for payments on the shops account
+			client := horizonclient.DefaultTestNetClient //DefaultPublicNetClient
+			opRequest := horizonclient.OperationRequest{ForAccount: *account_publickey}
+			err := client.StreamPayments(context.Background(), opRequest, controllers.CreatePaymentHandler(broadcaster, *account_publickey, client))
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 	}()
 
