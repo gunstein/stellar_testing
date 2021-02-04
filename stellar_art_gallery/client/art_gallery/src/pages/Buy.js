@@ -179,7 +179,7 @@ const Buy = () => {
                 <TextField
                   id="target_account"
                   name="targetAccount"
-                  label="Target Account"
+                  label="Target Account (The account receiving XLM)"
                   fullWidth
                   InputProps={{
                     readOnly: true,
@@ -191,7 +191,7 @@ const Buy = () => {
                 <TextField
                   id="target_memo"
                   name="targetMemo"
-                  label="Target Memo"
+                  label="Target Memo (The OrderId)"
                   fullWidth
                   value={targetMemo}
                   InputProps={{
@@ -203,7 +203,7 @@ const Buy = () => {
                 <TextField
                   id="target_amount"
                   name="targetAmount"
-                  label="Target Amount"
+                  label="Target Amount (Price in XLM)"
                   fullWidth
                   value={selectedTile.price}
                   InputProps={{
@@ -243,7 +243,7 @@ const Buy = () => {
                     <TextField
                       id="source_account_public_key"
                       name="sourceAccountPublicKey"
-                      label="Source Account Public Key"
+                      label="Source Account Public Key (Customers account number)"
                       fullWidth
                       value={sourceAccountPublicKey}
                       InputProps={{
@@ -255,7 +255,7 @@ const Buy = () => {
                     <TextField
                       id="source_account_secret"
                       name="sourceAccountSecret"
-                      label="Source Account Secret"
+                      label="Source Account Secret (Top secret in real life)"
                       fullWidth
                       value={sourceAccountSecret}
                       InputProps={{
@@ -267,7 +267,7 @@ const Buy = () => {
                     <TextField
                       id="source_account_balance"
                       name="sourceAccountBalance"
-                      label="Source Account Balance"
+                      label="Source Account Balance (Monopoly money)"
                       fullWidth
                       value={sourceAccountBalance}
                       InputProps={{
