@@ -34,7 +34,6 @@ func main() {
 	
 	broadcaster := broadcast.NewBroadcaster(100)
 	defer broadcaster.Close()
-	//r.Use(stream.ServeHTTP())
 
 	go func(){
 
