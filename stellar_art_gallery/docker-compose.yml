@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  traefik:
+    image: "traefik:v2.4"
+    container_name: "traefik"
+    command:
+      # - "--log.level=DEBUG"
+      # - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=gunstein.vatnar@vatnar.no"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      # redirect port 80 -> 443
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+    ports:
+      - "443:443"
+      - "80:80"
+      # - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  client_stellar_art_gallery:
+    image: gunstein/client_stellar_art_gallery:latest
+    container_name: "client_stellar_art_gallery"
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client_stellar_art_gallery.rule=Host(`gallery.vatnar.no`)"
+      - "traefik.http.routers.client_stellar_art_gallery.entrypoints=websecure"
+      - "traefik.http.routers.client_stellar_art_gallery.tls.certresolver=myresolver"
+      # use compression
+      - "traefik.http.routers.client_stellar_art_gallery.middlewares=test-compress"
+      - "traefik.http.middlewares.test-compress.compress=true"
+
+  postgres:
+    image: postgres
+    container_name: "postgres"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./dbdata:/var/lib/postgresql/data
+
+  server_stellar_art_gallery:
+    image: gunstein/server_stellar_art_gallery:latest
+    container_name: "server_stellar_art_gallery"
+    depends_on:
+      - "postgres"
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.server_stellar_art_gallery.rule=Host(`galleryapi.vatnar.no`)"
+      - "traefik.http.routers.server_stellar_art_gallery.entrypoints=websecure"
+      - "traefik.http.routers.server_stellar_art_gallery.tls.certresolver=myresolver"
+    command: "-account=GBGJFGCDZHQ3LXJOUK7EOZB77OR2GMES3FVQRK4M724THUDLZLP7J6A7"
