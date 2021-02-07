@@ -3,7 +3,6 @@ import Dialog from "@material-ui/core/Dialog";
 import CloseIcon from "@material-ui/icons/Close";
 import Fab from "@material-ui/core/Fab";
 import GalleryAppBar from "../components/GalleryAppBar";
-import Slide from "@material-ui/core/Slide";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -48,17 +47,8 @@ export default function ImageDialog({
     ev.target.src = alternativeBigImageUrl;
   };
 
-  const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-  });
-
   return (
-    <Dialog
-      fullScreen
-      open={true}
-      onClose={handleClose}
-      TransitionComponent={Transition}
-    >
+    <Dialog fullScreen open={true} onClose={handleClose}>
       <main className={classes.layout}>
         <GalleryAppBar></GalleryAppBar>
         <Paper className={classes.paper}>

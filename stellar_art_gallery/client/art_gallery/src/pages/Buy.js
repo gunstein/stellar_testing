@@ -317,14 +317,13 @@ const Buy = () => {
             </Fab>
           </Paper>
         </main>
-      ) : null}
-      {bigImageUrl !== "" ? (
+      ) : (
         <ImageDialog
           handleCloseToParent={handleCloseImageDialog}
           bigImageUrl={bigImageUrl}
           alternativeBigImageUrl={alternativeBigImageUrl}
         ></ImageDialog>
-      ) : null}
+      )}
     </React.Fragment>
   );
 };
