@@ -3,6 +3,7 @@ package models
 import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"time"
 )
 
 type Art struct {
@@ -30,7 +31,12 @@ func ConnectDatabase() {
 	dsn := "host=postgres user=postgres password=postgres dbname=postgres port=5432"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("failed to connect database")
+		//Wait 5 secs and try again. Container might be starting up.
+		time.Sleep(5 * time.Millisecond)
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		if err != nil {
+			panic("failed to connect database")
+		}		
 	}
 
 	db.Migrator().DropTable(&Art{})
